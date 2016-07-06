@@ -1,0 +1,170 @@
+
+#==================== SegonMergeTag ============================
+#========================= Begin ===============================
+#===============================================================
+# System
+#===============================================================
+# show folder size
+#alias du='du -h --max-depth=1'
+
+# open folder
+alias of='nautilus'
+
+# cd
+alias ..='cd ..'
+
+# grep
+alias grepir='grep -inr '
+
+# tar -xvzf
+alias untar='tar -xvzf'
+
+#ccache
+export USE_CCACHE=1
+export CCACHE_DIR=/work/.ccache
+
+# cptovendor
+cptovendor(){
+    setVendorPathIfNeed
+    if [ "$1" = "" ] || [ ! -f $1 ] ; then
+        echo "Source file is not exist, please check!"
+    else
+        if [ -f $VENDOR_SOURCE_PATH$1 ] ; then
+            echo $VENDOR_SOURCE_PATH$1
+            echo "Target is already exsit, do you want to override it ? (y/n/c)"
+            read yesno
+            if [ $yesno = "y" ] || [ $yesno = "Y" ]; then
+                rm $VENDOR_SOURCE_PATH$1
+            elif [ $yesno = "c" ] || [ $yesno = "C" ]; then
+                vimdiff  $1 $VENDOR_SOURCE_PATH$1
+                return
+            else
+                return
+            fi
+        fi
+        cp --parents $1 $VENDOR_SOURCE_PATH
+        if [ $? -eq 0 ] ; then
+            echo "--> $VENDOR_SOURCE_PATH$1"
+        else
+            echo "Copy error!"
+        fi
+    fi
+}
+
+alias cdtovendor='cd $VENDOR_SOURCE_PATH'
+
+compareToVendor(){
+    setVendorPathIfNeed
+    if [ "$1" = "" ] ; then
+       echo "Error param !"
+    else
+       if [ "$2" = "vim" ] ; then
+           vimdiff $1 $VENDOR_SOURCE_PATH$1
+       else
+           bcompare $1 $VENDOR_SOURCE_PATH$1
+       fi
+    fi
+}
+
+vdtovendor(){
+    compareToVendor $1 vim 
+}
+
+bctovendor(){
+    compareToVendor $1 bcompare 
+}
+
+setVendorPathIfNeed(){
+    if [ "$VENDOR_SOURCE_PATH" = "" ] || [ ! -d $VENDOR_SOURCE_PATH ] ; then
+        echo 'Please input vendor source folder path'
+        echo 'for example : vendor/dewav/proprietary/d3679_qmobile-s6/source/'
+        while true
+        do
+            read VENDOR_SOURCE_PATH
+                if [ ! -d $VENDOR_SOURCE_PATH ] ; then
+                echo "Folder is not exsit, please input vendor source folder path:"
+            else
+                export VENDOR_SOURCE_PATH=$VENDOR_SOURCE_PATH
+                break
+            fi
+        done
+    fi        
+    #echo "$VENDOR_SOURCE_PATH"
+}
+
+#===============================================================
+# Tools
+#===============================================================
+#===============================================================
+# Git
+#===============================================================
+alias gst='git status'
+alias gad='git add .'
+alias gac='git add . && git commit'
+alias gcm='git commit'
+alias gpr='git pull --rebase'
+alias gbr='git branch'
+
+# 以前: git push origin d35_s35_a35_custom:refs/for/d35_s35_a35_custom
+#   或: git push origin HEAD:refs/for/master
+# 现在：gpush
+#   ps: 本地branch名记得和服务器上的对应，理由自己看下面代码
+gpush(){
+    branch=`git branch | grep "\*" | awk -F ' '  '{print $2}'`
+    echo "Current branch is : $branch"
+    if [ "$branch" == "master" ] ; then
+        echo "--> git push origin HEAD:refs/for/master"
+	git push origin HEAD:refs/for/master
+    else
+        echo "--> git push origin $branch:refs/for/$branch"
+	git push origin $branch:refs/for/$branch
+    fi
+}
+
+# Reset code
+alias grt='git reset --hard HEAD && git clean -fd && git pull --rebase'
+
+#===============================================================
+# SVN
+#===============================================================
+alias rmsvn='find . -type d -name ".svn" | xargs rm -rf'
+
+#===============================================================
+# adb
+#===============================================================
+
+alias adbr='adb remount '
+alias adbrr='adb kill-server && adb start-server && adb remount '
+alias adbl='adb logcat '
+alias adbs='adb shell '
+alias adbcap="adb shell screencap -p | sed 's/\r$//' >"  # 截屏，example: adbcap ~/Desktop/cap.png
+alias adbcurrentactivity="adb shell dumpsys activity | grep mFocusedActivity"   # 得到当前屏幕是哪个Activity
+alias adbsmem="adb shell cat /proc/meminfo"     # 查看内存信息
+alias adbscpu="adb shell cat /proc/cpuinfo"     # 查看CPU信息
+
+# 使用说明：adbp out/target/product/d3679/system/app/Settings.apk
+adbp(){
+    if [ "$1" = "" ] || [ ! -f $1 ] ; then
+        echo "Source file is not exist, please check!"
+    else
+        dir=`dirname $1`
+        dir=`echo $dir | sed 's/out\/target\/product\/[a-z][0-9][0-9][0-9][0-9]//g'`
+        echo "adb push $1 $dir"
+        adb remount && adb push $1 $dir
+    fi
+}
+
+# 使用说明：比如想杀掉systemui进程，$ adbkill systemui
+adbkill(){
+    pid=`adbs ps | grep -i $1 | awk '{print $2}'`
+    if [ "$pid" != "" ]; then
+        echo "adb shell kill $pid"
+        adb shell kill $pid
+    else
+    	echo "Not find !!!"
+    fi
+}
+
+# 恢复出厂设置
+alias adbfactoryreset='adb shell am broadcast -a android.intent.action.MASTER_CLEAR'
+#========================== End ================================
