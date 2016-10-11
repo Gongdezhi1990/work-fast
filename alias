@@ -93,6 +93,31 @@ setVendorPathIfNeed(){
     #echo "$VENDOR_SOURCE_PATH"
 }
 
+#
+# mmm module & push result into phone
+# param   : module path
+# Useage  : mk [-B] <path>
+# example : mk -B packages/apps/Email/
+#
+mk(){
+    logFile="mk.log"
+    if [ "$1" = "-B" ] ; then
+        mmm -B $2 2>&1 | tee ${logFile}
+    else
+        mmm $1 2>&1 | tee ${logFile}
+    fi
+
+    # 有的时候会编译附加的test apk失败，所以单纯以最后编译结果
+    # 判定是否要push 是不准确的
+    if [ "`cat ${logFile} | grep -c "Install:"`" != 0 ]; then
+        adbp `cat ${logFile} | grep "Install: " | sed 's/Install://'`
+    else
+        echoerror
+    fi
+    
+    rm ${logFile}
+}
+
 #===============================================================
 # Tools
 #===============================================================
@@ -143,12 +168,12 @@ alias adbcurrentactivity="adb shell dumpsys activity | grep mFocusedActivity"   
 alias adbsmem="adb shell cat /proc/meminfo"     # 查看内存信息
 alias adbscpu="adb shell cat /proc/cpuinfo"     # 查看CPU信息
 
-#---------------------------------------------------------------
+#
 # Push files into phone
 # param   : file's path, must start with "out/target/product/projectname/"
 # Useage  : adbp <path> [<path>...]
 # example : adbp out/target/product/a3658/system/app/Email/Email.apk
-#---------------------------------------------------------------
+#
 adbp(){
     logFile="push.log"
 
