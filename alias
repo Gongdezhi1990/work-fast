@@ -56,13 +56,14 @@ alias cdtovendor='cd $VENDOR_SOURCE_PATH'
 compareToVendor(){
     setVendorPathIfNeed
     if [ "$1" = "" ] ; then
-       echo "Error param !"
+        echo "Error param !"
+        echoerror
     else
-       if [ "$2" = "vim" ] ; then
-           vimdiff $1 $VENDOR_SOURCE_PATH$1
-       else
-           bcompare $1 $VENDOR_SOURCE_PATH$1
-       fi
+        if [ "$2" = "vim" ] ; then
+            vimdiff $1 $VENDOR_SOURCE_PATH$1
+        else
+            bcompare $1 $VENDOR_SOURCE_PATH$1
+        fi
     fi
 }
 
@@ -81,7 +82,7 @@ setVendorPathIfNeed(){
         while true
         do
             read VENDOR_SOURCE_PATH
-                if [ ! -d $VENDOR_SOURCE_PATH ] ; then
+            if [ ! -d $VENDOR_SOURCE_PATH ] ; then
                 echo "Folder is not exsit, please input vendor source folder path:"
             else
                 export VENDOR_SOURCE_PATH=$VENDOR_SOURCE_PATH
@@ -114,10 +115,10 @@ gpush(){
     echo "Current branch is : $branch"
     if [ "$branch" == "master" ] ; then
         echo "--> git push origin HEAD:refs/for/master"
-	git push origin HEAD:refs/for/master
+        git push origin HEAD:refs/for/master
     else
         echo "--> git push origin $branch:refs/for/$branch"
-	git push origin $branch:refs/for/$branch
+        git push origin $branch:refs/for/$branch
     fi
 }
 
@@ -154,14 +155,37 @@ adbp(){
     fi
 }
 
-# 使用说明：比如想杀掉systemui进程，$ adbkill systemui
+echogreen(){
+    echo -e "\033[0;32m$1\033[00m"
+}
+
+echored(){
+    echo -e "\033[0;31m$1\033[00m"
+}
+
+echoerror(){
+    echored "                   .-\"      \"-. "
+    echored "                  /            \  "
+    echored "                 |              | "
+    echored "                 |,  .-.  .-.  ,| "
+    echored "                 | )(__/  \__)( | "
+    echored "                 |/     /\     \| "
+    echored "                 (_     ^^     _) "
+    echored "                  \__|IIIIII|__/  "
+    echored "                   |-\IIIIII/-|   "
+    echored "                   \          /   "
+    echored "                    \`--------\`  "
+}
+
+#使用说明：比如想杀掉systemui进程，$ adbkill systemui
 adbkill(){
     pid=`adbs ps | grep -i $1 | awk '{print $2}'`
     if [ "$pid" != "" ]; then
-        echo "adb shell kill $pid"
+        echogreen "adb shell kill $pid"
         adb shell kill $pid
     else
-    	echo "Not find !!!"
+    	echogreen "Not find !!!"
+        echoerror
     fi
 }
 
