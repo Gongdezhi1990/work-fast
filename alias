@@ -143,16 +143,30 @@ alias adbcurrentactivity="adb shell dumpsys activity | grep mFocusedActivity"   
 alias adbsmem="adb shell cat /proc/meminfo"     # 查看内存信息
 alias adbscpu="adb shell cat /proc/cpuinfo"     # 查看CPU信息
 
-# 使用说明：adbp out/target/product/d3679/system/app/Settings.apk
+#---------------------------------------------------------------
+# Push files into phone
+# param   : file's path, must start with "out/target/product/projectname/"
+# Useage  : adbp <path> [<path>...]
+# example : adbp out/target/product/a3658/system/app/Email/Email.apk
+#---------------------------------------------------------------
 adbp(){
-    if [ "$1" = "" ] || [ ! -f $1 ] ; then
-        echo "Source file is not exist, please check!"
-    else
-        dir=`dirname $1`
-        dir=`echo $dir | sed 's/out\/target\/product\/[a-z][0-9][0-9][0-9][0-9]//g'`
-        echo "adb push $1 $dir"
-        adb remount && adb push $1 $dir
-    fi
+    logFile="push.log"
+
+    adb remount
+    for path in $@
+    do
+        if [ "$path" = "" ] || [ ! -f $path ] ; then
+            echogreen "Source file is not exist, please check!"
+        else
+            dir=`dirname $path`
+            dir=`echo $dir | sed 's/out\/target\/product\/.....\///g'`
+            echogreen "adb push $path $dir"
+            adb push -p $path $dir 2>&1 | tee ${logFile}
+            if [ "`cat ${logFile} | grep -c "failed"`" != 0 ]; then
+                echoerror
+            fi
+        fi
+    done
 }
 
 echogreen(){
