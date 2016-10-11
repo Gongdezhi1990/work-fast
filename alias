@@ -23,32 +23,47 @@ alias untar='tar -xvzf'
 export USE_CCACHE=1
 export CCACHE_DIR=/work/.ccache
 
-# cptovendor
+
+#
+# copy file(s) to vendor with parents path
+# param   : file(s) path
+# Useage  : cptovendor <path> [<path>...]
+# example : cptovendor packages/apps/Settings/Android.mk packages/apps/Settings/AndroidManifest.xml
+#
 cptovendor(){
     setVendorPathIfNeed
-    if [ "$1" = "" ] || [ ! -f $1 ] ; then
-        echo "Source file is not exist, please check!"
-    else
-        if [ -f $VENDOR_SOURCE_PATH$1 ] ; then
-            echo $VENDOR_SOURCE_PATH$1
-            echo "Target is already exsit, do you want to override it ? (y/n/c)"
-            read yesno
-            if [ $yesno = "y" ] || [ $yesno = "Y" ]; then
-                rm $VENDOR_SOURCE_PATH$1
-            elif [ $yesno = "c" ] || [ $yesno = "C" ]; then
-                vimdiff  $1 $VENDOR_SOURCE_PATH$1
-                return
+    
+    for src in $@
+    do
+        dest=$VENDOR_SOURCE_PATH/$src
+        if [ "$src" = "" ] || [ ! -f $src ] ; then
+            echored "Source file is not exist, please check!"
+            echoerror
+        else
+            if [ -f $dest ] ; then
+                echo $dest
+                echored "Target is already exsit, do you want to override it ? (y/n/c)"
+                read yesno
+                if [ $yesno = "y" ] || [ $yesno = "Y" ]; then   # 覆盖
+                    rm $dest
+                elif [ $yesno = "c" ] || [ $yesno = "C" ]; then # 对比
+                    vimdiff $src $dest
+                    continue
+                else                                            # Do nothing...
+                    continue
+                fi
+            fi
+
+            cp --parents $src $VENDOR_SOURCE_PATH
+
+            if [ $? -eq 0 ] ; then
+                echogreen "--> $dest"
             else
-                return
+                echored "Copy error!"
+                echoerror
             fi
         fi
-        cp --parents $1 $VENDOR_SOURCE_PATH
-        if [ $? -eq 0 ] ; then
-            echo "--> $VENDOR_SOURCE_PATH$1"
-        else
-            echo "Copy error!"
-        fi
-    fi
+    done
 }
 
 alias cdtovendor='cd $VENDOR_SOURCE_PATH'
@@ -75,6 +90,11 @@ bctovendor(){
     compareToVendor $1 bcompare 
 }
 
+#
+# set vendor path
+# param   : vendor path
+# example : setVendorPathIfNeed
+#
 setVendorPathIfNeed(){
     if [ "$VENDOR_SOURCE_PATH" = "" ] || [ ! -d $VENDOR_SOURCE_PATH ] ; then
         echo 'Please input vendor source folder path'
