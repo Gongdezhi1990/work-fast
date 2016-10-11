@@ -140,7 +140,8 @@ nmap <leader>sk :cs kill cscope.out <CR>
 " 打开数据库连接
 nmap <leader>so :cs add cscope.out <CR>
 
-nmap <F5> :!find frameworks/ packages/ -iname '*.java' -o -iname '*.xml' -o -iname '*.mk' \| sed '/data-binding/d' \| sed '/res\/values-/d' \| sed '/res_ext\/values-/d' > cscope.files && cscope -bk -i cscope.files -f cscope.out && rm cscope.files<CR> 
+nmap <F5> :!find frameworks/ packages/ vendor/mediatek/proprietary/ -iname '*.java' -o -iname '*.xml' -o -iname '*.mk' \| sed '/data-binding/d' \| sed '/res\/values-/d' \| sed '/res_ext\/values-/d' > cscope.files && cscope -bk -i cscope.files -f cscope.out && rm cscope.files<CR> 
+nmap <F6> :!find -iname '*.java' -o -iname '*.xml' -o -iname '*.mk' > cscope.files && cscope -bk -i cscope.files -f cscope.out && rm cscope.files<CR> 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vimdiff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
