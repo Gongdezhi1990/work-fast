@@ -1,0 +1,19 @@
+[core]
+	editor = vim
+[merge]
+	tool = bcompare
+[color]
+	ui = true
+[color "diff"]
+	new = magenta
+	old = red
+	meta = cyan
+	whitespace = white
+[color "branch"]
+	current = magenta
+[alias]
+	lg = log --graph --pretty=format:'%Cred%h%Creset @ %C(bold blue)<%an> %Creset@ %Cblue(%ci)%Creset%C(yellow)%d%Creset %n %CgreenCommit subject: %s%Creset %n'  --abbrev-commit
+[difftool]
+	prompt = false
+[diff]
+	tool = bc3
