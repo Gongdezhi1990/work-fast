@@ -242,13 +242,38 @@ echoerror(){
 
 #使用说明：比如想杀掉systemui进程，$ adbkill systemui
 adbkill(){
-    pid=`adbs ps | grep -i $1 | awk '{print $2}'`
-    if [ "$pid" != "" ]; then
-        echogreen "adb shell kill $pid"
+    pid=0
+
+    OLD_IFS="$IFS"
+    IFS=";"
+    process=(`adbs ps | grep -i $1 | awk '{printf("%s\t%s\n;", $2, $9)}'`)
+    IFS="$OLD_IFS"
+    
+    length=${#process[@]}
+
+    if [ $length == 0 ] ; then
+    	echogreen "Not find !!!"
+    elif [ $length == 1 ] ; then
+        pid=`echo ${process[0]} | awk '{printf $1}'`
+    	echogreen "kill -> ${process[0]}"
         adb shell kill $pid
     else
-    	echogreen "Not find !!!"
-        echoerror
+        for i in "${!process[@]}"; do 
+            printf "%s\t%s" "$i" "${process[$i]}"
+        done
+
+        echo -n "For many options, please enter index :"
+        read index
+
+        if [ "$index" != "" ] ; then
+            if [[ "$index" -ge 0 && "$index" -lt "$length" ]] ; then
+                pid=`echo ${process[$index]} | awk '{printf $1}'`
+                echogreen "kill -> ${process[$index]}"
+                adb shell kill $pid
+            else
+                echored "Error index!"
+            fi
+        fi
     fi
 }
 
