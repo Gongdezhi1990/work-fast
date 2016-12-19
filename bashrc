@@ -142,6 +142,28 @@ mk(){
     rm ${logFile}
 }
 
+echogreen(){
+    echo -e "\033[0;32m$1\033[00m"
+}
+
+echored(){
+    echo -e "\033[0;31m$1\033[00m"
+}
+
+echoerror(){
+    echored "                   .-\"      \"-. "
+    echored "                  /            \  "
+    echored "                 |              | "
+    echored "                 |,  .-.  .-.  ,| "
+    echored "                 | )(__/  \__)( | "
+    echored "                 |/     /\     \| "
+    echored "                 (_     ^^     _) "
+    echored "                  \__|IIIIII|__/  "
+    echored "                   |-\IIIIII/-|   "
+    echored "                   \          /   "
+    echored "                    \`--------\`  "
+}
+
 #===============================================================
 # Tools
 #===============================================================
@@ -216,28 +238,6 @@ adbp(){
             fi
         fi
     done
-}
-
-echogreen(){
-    echo -e "\033[0;32m$1\033[00m"
-}
-
-echored(){
-    echo -e "\033[0;31m$1\033[00m"
-}
-
-echoerror(){
-    echored "                   .-\"      \"-. "
-    echored "                  /            \  "
-    echored "                 |              | "
-    echored "                 |,  .-.  .-.  ,| "
-    echored "                 | )(__/  \__)( | "
-    echored "                 |/     /\     \| "
-    echored "                 (_     ^^     _) "
-    echored "                  \__|IIIIII|__/  "
-    echored "                   |-\IIIIII/-|   "
-    echored "                   \          /   "
-    echored "                    \`--------\`  "
 }
 
 #使用说明：比如想杀掉systemui进程，$ adbkill systemui
