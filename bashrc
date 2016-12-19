@@ -134,7 +134,7 @@ mk(){
     # 有的时候会编译附加的test apk失败，所以单纯以最后编译结果
     # 判定是否要push 是不准确的
     if [ "`cat ${logFile} | grep -c "Install:"`" != 0 ]; then
-        adbp `cat ${logFile} | grep "Install: " | sed 's/Install://'`
+        adbp `cat ${logFile} | grep "Install: " | sed 's/^.*Install:\s*//'`
     else
         echoerror
     fi
