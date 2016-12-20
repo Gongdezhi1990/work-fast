@@ -117,29 +117,59 @@ setVendorPathIfNeed(){
     #echo "$VENDOR_SOURCE_PATH"
 }
 
-#
-# mmm module & push result into phone
-# param   : module path
-# Useage  : mk [-B] <path>
-# example : mk -B packages/apps/Email/
-#
 mk(){
-    logFile="mk.log"
-    if [ "$1" = "-B" ] ; then
-        mmm -B $2 2>&1 | tee ${logFile}
-    else
-        mmm $1 2>&1 | tee ${logFile}
+    logFile=""
+
+    if [ ! -e "makelog" ] ; then
+        mkdir makelog
     fi
 
-    # 有的时候会编译附加的test apk失败，所以单纯以最后编译结果
-    # 判定是否要push 是不准确的
-    if [ "`cat ${logFile} | grep -c "Install:"`" != 0 ]; then
-        adbp `cat ${logFile} | grep "Install: " | sed 's/^.*Install:\s*//'`
+    if [[ "$1" != "" && -e "$1/Android.mk" ]] ; then
+        logFile="makelog/mmm.log"
+        mmm -j8 $1 2>&1 | tee ${logFile}
+        grepInstall ${logFile}
+    elif [[ "$1" = "" && -e "./Android.mk" ]] ; then
+        logFile="makelog/mk.mm.log"
+        mm -j8 2>&1 | tee ${logFile}
+        grepInstall ${logFile}
+    elif [[ "$1" = "framework" || "$1" = "systemimage" ]] ; then
+        logFile="makelog/mk.$1.log"
+        make -j8 $1 2>&1 | tee ${logFile}
+        grepInstall ${logFile}
     else
-        echoerror
+        echored "Nothing to mk !"
     fi
-    
-    rm ${logFile}
+}
+
+mka(){
+    logFile=""
+
+    if [ ! -e "makelog" ] ; then
+        mkdir makelog
+    fi
+
+    if [[ "$1" != "" && -e "$1/Android.mk" ]] ; then
+        logFile="makelog/mka.mmma.log"
+        mmma -j8 $1 2>&1 | tee ${logFile}
+        grepInstall ${logFile}
+    elif [[ "$1" = "" && -e "./Android.mk" ]] ; then
+        logFile="makelog/mka.mma.log"
+        mma -j8 2>&1 | tee ${logFile}
+        grepInstall ${logFile}
+    else
+        echored "Nothing to mk !"
+    fi
+}
+
+grepInstall(){
+    if [[ "$1" != "" && -e "$1" && "`cat $1 | grep -c "Install:"`" != 0 ]] ; then
+        for path in `cat $1 | grep "Install: " | sed 's/^.*Install:\s*//'`
+        do
+            echogreen $path
+        done
+    else
+        echored "No installed modules in $1 !"
+    fi
 }
 
 echogreen(){
