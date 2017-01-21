@@ -318,4 +318,13 @@ adbkill(){
 
 # 恢复出厂设置
 alias adbfactoryreset='adb shell am broadcast -a android.intent.action.MASTER_CLEAR'
+
+# 开发时要改的一些设置
+adbdev(){
+    # 充电时手机常亮
+    adb shell settings put global stay_on_while_plugged_in 3
+    # 灭屏时间30分钟
+    adb shell settings put system screen_off_timeout 1800000
+}
+
 #========================== End ================================
