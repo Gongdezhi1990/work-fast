@@ -277,6 +277,7 @@ adbp(){
             fi
         fi
     done
+    rm ${logFile}
 }
 
 #使用说明：比如想杀掉systemui进程，$ adbkill systemui
