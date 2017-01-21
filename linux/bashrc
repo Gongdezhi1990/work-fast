@@ -239,10 +239,19 @@ alias adbr='adb remount '
 alias adbrr='adb kill-server && adb start-server && adb remount '
 alias adbl='adb logcat '
 alias adbs='adb shell '
-alias adbcap="adb shell screencap -p | sed 's/\r$//' >"  # 截屏，example: adbcap ~/Desktop/cap.png
 alias adbcurrentactivity="adb shell dumpsys activity | grep mFocusedActivity"   # 得到当前屏幕是哪个Activity
 alias adbsmem="adb shell cat /proc/meminfo"     # 查看内存信息
 alias adbscpu="adb shell cat /proc/cpuinfo"     # 查看CPU信息
+
+#
+# Capture the screen and save image to current path
+# param   : Capture's name
+# Useage  : adbcap name
+# example : adbcap demo
+#
+adbcap(){
+    adb shell screencap -p /sdcard/$1.png && adb pull /sdcard/$1.png
+}
 
 #
 # Push files into phone
