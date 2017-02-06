@@ -323,9 +323,18 @@ alias adbfactoryreset='adb shell am broadcast -a android.intent.action.MASTER_CL
 # 开发时要改的一些设置
 adbdev(){
     # 充电时手机常亮
-    adb shell settings put global stay_on_while_plugged_in 3
+    adbSetSetting global stay_on_while_plugged_in 3
     # 灭屏时间30分钟
-    adb shell settings put system screen_off_timeout 1800000
+    adbSetSetting system screen_off_timeout 1800000
 }
 
+adbSetSetting(){
+    local filed=$1
+    local name=$2
+    local value=$3
+
+    local LENGTH=-25
+    adb shell settings put $filed $name $value
+    printf "\033[0;32m%s %${LENGTH}s --> %s\033[00m\n" "$filed" "$name" `adb shell settings get $filed $name`
+}
 #========================== End ================================
