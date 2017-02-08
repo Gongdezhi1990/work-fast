@@ -199,9 +199,10 @@ grepInstall(){
 }
 
 # 在Android.mk中添加“LOCAL_DEX_PREOPT := false”，即不提取odex
+# example: noodex packages/apps/Settings/Android.mk
 noodex(){
     if [[ `egrep -c "LOCAL_PACKAGE_NAME :=|LOCAL_MODULE :=" $1` > 0 ]] ; then
-        sed '/LOCAL_PACKAGE_NAME :=\|LOCAL_MODULE :=/a\LOCAL_DEX_PREOPT := false' -i Android.mk
+        sed '/LOCAL_PACKAGE_NAME :=\|LOCAL_MODULE :=/a\LOCAL_DEX_PREOPT := false' -i $1
 
         cat $1 | egrep "LOCAL_PACKAGE_NAME :=|LOCAL_MODULE :=|LOCAL_DEX_PREOPT :=" | while read line
         do
