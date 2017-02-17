@@ -27,7 +27,8 @@ alias untar='tar -xvzf'
 export USE_CCACHE=1
 export CCACHE_DIR=/work/.ccache
 
-
+# history show date & time
+export HISTTIMEFORMAT="%F %T "
 
 echogreen(){
     echo -e "\033[0;32m$1\033[00m"
