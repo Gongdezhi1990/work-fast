@@ -12,8 +12,12 @@
 [color "branch"]
 	current = magenta
 [alias]
-	lg = log --graph --pretty=format:'%Cred%h%Creset @ %C(bold blue)<%an> %Creset@ %Cblue(%ci)%Creset%C(yellow)%d%Creset %n %CgreenCommit subject: %s%Creset %n'  --abbrev-commit
+	lg = log --graph --pretty=format:'%Cred%h%Creset @ %C(bold blue)<%an> %Creset@ %Cblue(%ci)%Creset%C(yellow)%d%Creset %n %CgreenCommit subject: %s%Creset %n' --abbrev-commit
+	lgs = log --graph --pretty=format:'%Cred%h%Creset @ %C(bold blue)<%an> %Creset@ %Cblue(%ci)%Creset%C(yellow)%d%Creset %n %CgreenCommit subject: %s%Creset %n' --abbrev-commit --name-status
+	lg1 = log --graph --pretty=format:'%Cred%h%Creset @ %C(bold blue)<%an> %Creset@ %Cblue(%ci)%Creset%C(yellow)%d%Creset %n %CgreenCommit subject: %s%Creset %n' --abbrev-commit --name-status -1
 [difftool]
 	prompt = false
 [diff]
-	tool = bc3
+	tool = bcompare
+[push]
+	default = matching
