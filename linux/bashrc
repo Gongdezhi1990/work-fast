@@ -371,4 +371,15 @@ adbSetSetting(){
     adb shell settings put $filed $name $value
     printf "\033[0;32m%s %${LENGTH}s --> %s\033[00m\n" "$filed" "$name" `adb shell settings get $filed $name`
 }
+
+pullmtklog(){
+    name=`adb shell getprop ro.product.name`
+    if [ $? -eq 0 ] ; then
+        folderName=${name}-`date +%m%d%k%M`
+        mkdir -p ~/log/${folderName}/mtklog
+        adb pull /sdcard/mtklog ~/log/${folderName}/mtklog/
+        echogreen "--> ~/log/${folderName}/mtklog/"
+    fi
+}
+
 #========================== End ================================
