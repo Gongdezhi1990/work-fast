@@ -389,9 +389,9 @@ pmtk(){
         else
             local folderName=${name}-`date +%m%d%k%M`-${1}
         fi
-        local logPath="~/log/${folderName}/mtklog"
-        mkdir -p ${logPath}
-        adb pull /sdcard/mtklog ${logPath}
+        local logPath=~/log/${folderName}/mtklog
+        mkdir -p "${logPath}"
+        adb pull /sdcard/mtklog "${logPath}"
         echogreen "--> ${logPath}"
     fi
 }
