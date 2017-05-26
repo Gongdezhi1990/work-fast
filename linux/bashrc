@@ -372,13 +372,27 @@ adbSetSetting(){
     printf "\033[0;32m%s %${LENGTH}s --> %s\033[00m\n" "$filed" "$name" `adb shell settings get $filed $name`
 }
 
-pullmtklog(){
-    name=`adb shell getprop ro.product.name`
+# 打开mtklog界面
+alias smtk='adb shell am start -n com.mediatek.mtklogger/.MainActivity'
+
+# 删除手机中的mtk文件夹
+alias dmtk='adb shell rm -rf /sdcard/mtklog'
+
+# 将手机中的mtklog拷贝到~/log目录下
+pmtk(){
+    local name=`adb shell getprop ro.product.name`
+    # 获取手机name成功
     if [ $? -eq 0 ] ; then
-        folderName=${name}-`date +%m%d%k%M`
-        mkdir -p ~/log/${folderName}/mtklog
-        adb pull /sdcard/mtklog ~/log/${folderName}/mtklog/
-        echogreen "--> ~/log/${folderName}/mtklog/"
+        # 是否有log标题
+        if [ "$1" = "" ]; then
+            local folderName=${name}-`date +%m%d%k%M`
+        else
+            local folderName=${name}-`date +%m%d%k%M`-${1}
+        fi
+        local logPath="~/log/${folderName}/mtklog"
+        mkdir -p ${logPath}
+        adb pull /sdcard/mtklog ${logPath}
+        echogreen "--> ${logPath}"
     fi
 }
 
