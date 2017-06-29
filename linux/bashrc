@@ -149,6 +149,7 @@ setVendorPathIfNeed(){
 #                  如果指定path，编译指定路径的模块
 # mk framework   - 编译整个框架
 # mk systemimage - 编译system.img
+# mk bootimage   - 编译boot.img
 mk(){
     local ppath=`pwd`
     while [ ! -f "${ppath}/scm-using.sh" ]; do
@@ -162,7 +163,7 @@ mk(){
     elif [[ "$1" = "" && -e "./Android.mk" ]] ; then
         mm -j8 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
-    elif [[ "$1" = "framework" || "$1" = "systemimage" ]] ; then
+    elif [[ "$1" = "framework" || "$1" = "systemimage" || "$1" = "bootimage" ]] ; then
         make -j8 $1 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     else
