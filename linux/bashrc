@@ -150,22 +150,19 @@ setVendorPathIfNeed(){
 # mk framework   - 编译整个框架
 # mk systemimage - 编译system.img
 mk(){
-    logFile=""
-
-    if [ ! -e "makelog" ] ; then
-        mkdir makelog
-    fi
+    local ppath=`pwd`
+    while [ ! -f "${ppath}/scm-using.sh" ]; do
+        ppath="${ppath}/.."
+    done
+    local logFile="${ppath}/make.log"
 
     if [[ "$1" != "" && -e "$1/Android.mk" ]] ; then
-        logFile="makelog/mmm.log"
         mmm -j8 $1 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     elif [[ "$1" = "" && -e "./Android.mk" ]] ; then
-        logFile="makelog/mk.mm.log"
         mm -j8 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     elif [[ "$1" = "framework" || "$1" = "systemimage" ]] ; then
-        logFile="makelog/mk.$1.log"
         make -j8 $1 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     else
@@ -177,18 +174,16 @@ mk(){
 # mk <path>      - 如果没有指定path，编译当前所在文件夹的模块以及其依赖的模块
 #                  如果指定path，编译指定路径的模块以及其依赖的模块
 mka(){
-    logFile=""
-
-    if [ ! -e "makelog" ] ; then
-        mkdir makelog
-    fi
+    local ppath=`pwd`
+    while [ ! -f "${ppath}/scm-using.sh" ]; do
+        ppath="${ppath}/.."
+    done
+    local logFile="${ppath}/make.log"
 
     if [[ "$1" != "" && -e "$1/Android.mk" ]] ; then
-        logFile="makelog/mka.mmma.log"
         mmma -j8 $1 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     elif [[ "$1" = "" && -e "./Android.mk" ]] ; then
-        logFile="makelog/mka.mma.log"
         mma -j8 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     else
@@ -289,29 +284,50 @@ adbcap(){
 
 #
 # Push files into phone
-# param   : file's path, must start with "out/target/product/projectname/"
-# Useage  : adbp <path> [<path>...]
+# param   : 文件路径，
+#           如果指定，则push指定的apk(s)；
+#           如果没指定，则检查工程根目录下的make.log文件
+# Useage  : adbp [<path>...]
 # example : adbp out/target/product/a3658/system/app/Email/Email.apk
 #
 adbp(){
-    logFile="push.log"
+    if [ $# -gt 0 ]; then
+        adb remount
+        for path in $@
+        do
+            adbPushExt $path
+        done
+    elif [ -f "./make.log" ]; then
+        adb remount
+        for path in `cat ./make.log | grep "Install: " | sed 's/^.*Install:\s*//'` 
+        do 
+            adbPushExt $path
+        done
+    else
+        echored "Do nothing !"
+    fi
+}
 
-    adb remount
-    for path in $@
-    do
-        if [ "$path" = "" ] || [ ! -f $path ] ; then
-            echogreen "Source file is not exist, please check!"
-        else
-            dir=`dirname $path`
-            dir=`echo $dir | sed 's/out\/target\/product\/.....\///g'`
-            echogreen "adb push $path $dir"
-            adb push -p $path $dir 2>&1 | tee ${logFile}
-            if [ "`cat ${logFile} | grep -c "failed"`" != 0 ]; then
-                echoerror
-            fi
+#
+# Push files into phone
+# param   : file's path, must start with "out/target/product/projectname/"
+# Useage  : adbp <path>
+# example : adbp out/target/product/a3658/system/app/Email/Email.apk
+#
+function adbPushExt(){
+    local path=$1
+
+    if [ "$path" = "" ] || [ ! -f $path ] ; then
+        echogreen "Source file is not exist, please check!"
+    else
+        local dir=`dirname $path`
+        dir=`echo $dir | sed 's/out\/target\/product\/.....\///g'`
+        echogreen "adb push $path $dir"
+        adb push -p $path $dir
+        if [ $? -ne 0 ]; then
+            echoerror
         fi
-    done
-    rm ${logFile}
+    fi
 }
 
 #使用说明：比如想杀掉systemui进程，$ adbkill systemui
