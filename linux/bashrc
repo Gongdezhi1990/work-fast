@@ -275,7 +275,7 @@ alias adbs='adb shell '
 alias adbcurrentactivity="adb shell dumpsys activity | grep mFocusedActivity"   # 得到当前屏幕是哪个Activity
 alias adbsmem="adb shell cat /proc/meminfo"     # 查看内存信息
 alias adbscpu="adb shell cat /proc/cpuinfo"     # 查看CPU信息
-alias mtkl='adb shell am start -n com.mediatek.mtklogger/.MainActivity'
+alias showmem="adb shell dumpsys meminfo"       # 查看内存信息
 
 #
 # Capture the screen and save image to current path
