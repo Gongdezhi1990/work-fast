@@ -14,7 +14,7 @@ export bashrcandroid="bashrc-android"
 # example : cptovendor packages/apps/Settings/Android.mk packages/apps/Settings/AndroidManifest.xml
 function cptv(){
     if [ ! "$VENDOR_SOURCE_PATH" ]; then
-        echored "Please set 'VENDOR_SOURCE_PATH' first ."
+        echoRed "Please set 'VENDOR_SOURCE_PATH' first ."
         return
     fi
     
@@ -22,12 +22,12 @@ function cptv(){
     do
         dest=$VENDOR_SOURCE_PATH/$src
         if [ "$src" = "" ] || [ ! -f $src ] ; then
-            echored "Source file is not exist, please check!"
-            echoerror
+            echoRed "Source file is not exist, please check!"
+            echoError
         else
             if [ -f $dest ] ; then
                 echo $dest
-                echored "Target is already exsit, do you want to override it ? (y/n/c)"
+                echoRed "Target is already exsit, do you want to override it ? (y/n/c)"
                 read yesno
                 if [ $yesno = "y" ] || [ $yesno = "Y" ]; then   # 覆盖
                     rm $dest
@@ -42,10 +42,10 @@ function cptv(){
             cp --parents $src $VENDOR_SOURCE_PATH
 
             if [ $? -eq 0 ] ; then
-                echogreen "--> $dest"
+                echoGreen "--> $dest"
             else
-                echored "Copy error!"
-                echoerror
+                echoRed "Copy error!"
+                echoError
             fi
         fi
     done
@@ -57,7 +57,7 @@ function cptv(){
 # example : 
 function cdtv(){
     if [ ! "$VENDOR_SOURCE_PATH" ]; then
-        echored "Please set 'VENDOR_SOURCE_PATH' first ."
+        echoRed "Please set 'VENDOR_SOURCE_PATH' first ."
         return
     fi
     cd $VENDOR_SOURCE_PATH
@@ -70,13 +70,13 @@ function cdtv(){
 # example : 
 function cmptv(){
     if [ ! "$VENDOR_SOURCE_PATH" ]; then
-        echored "Please set 'VENDOR_SOURCE_PATH' first ."
+        echoRed "Please set 'VENDOR_SOURCE_PATH' first ."
         return
     fi
     
     if [ "$1" = "" ] ; then
         echo "Error param !"
-        echoerror
+        echoError
     else
         if [ "$2" = "b" ] ; then
             bcompare $1 $VENDOR_SOURCE_PATH$1
@@ -117,7 +117,7 @@ function setvp(){
     if [ -d ${path} ]; then
         export VENDOR_SOURCE_PATH=${path}
     else
-        echored "'$1' is not exist !!!"
+        echoRed "'$1' is not exist !!!"
     fi
 }
 
@@ -127,26 +127,23 @@ function setvp(){
 # mk framework   - 编译整个框架
 # mk systemimage - 编译system.img
 function mk(){
-    logFile=""
-
-    if [ ! -e "makelog" ] ; then
-        mkdir makelog
-    fi
+    local ppath=`pwd`
+    while [ ! -f "${ppath}/scm-using.sh" ]; do
+        ppath="${ppath}/.."
+    done
+    local logFile="${ppath}/make.log"
 
     if [[ "$1" != "" && -e "$1/Android.mk" ]] ; then
-        logFile="makelog/mmm.log"
         mmm -j8 $1 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     elif [[ "$1" = "" && -e "./Android.mk" ]] ; then
-        logFile="makelog/mk.mm.log"
         mm -j8 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     elif [[ "$1" = "framework" || "$1" = "systemimage" ]] ; then
-        logFile="makelog/mk.$1.log"
         make -j8 $1 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     else
-        echored "Nothing to mk !"
+        echoRed "Nothing to mk !"
     fi
 }
 
@@ -156,22 +153,20 @@ function mk(){
 #                  如果指定path，编译指定路径的模块以及其依赖的模块
 # example : 
 function mka(){
-    logFile=""
-
-    if [ ! -e "makelog" ] ; then
-        mkdir makelog
-    fi
+    local ppath=`pwd`
+    while [ ! -f "${ppath}/scm-using.sh" ]; do
+        ppath="${ppath}/.."
+    done
+    local logFile="${ppath}/make.log"
 
     if [[ "$1" != "" && -e "$1/Android.mk" ]] ; then
-        logFile="makelog/mka.mmma.log"
         mmma -j8 $1 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     elif [[ "$1" = "" && -e "./Android.mk" ]] ; then
-        logFile="makelog/mka.mma.log"
         mma -j8 2>&1 | tee ${logFile}
         highlightShowInstall ${logFile}
     else
-        echored "Nothing to mk !"
+        echoRed "Nothing to mk !"
     fi
 }
 
@@ -183,16 +178,17 @@ function highlightShowInstall(){
     if [[ "$1" != "" && -e "$1" && "`cat $1 | grep -c "Install:"`" != 0 ]] ; then
         for path in `cat $1 | grep "Install: " | sed 's/^.*Install:\s*//'`
         do
-            echogreen $path
+            echoGreen $path
         done
     else
-        echored "No installed modules in $1 !"
+        echoRed "No installed modules in $1 !"
     fi
-    notify-send -u critical "make complete"
 }
 
-# 在Android.mk中添加“LOCAL_DEX_PREOPT := false”，即不提取odex
-# example: noodex packages/apps/Settings/Android.mk
+# 在Android.mk中添加"LOCAL_DEX_PREOPT := false"，即不提取odex
+# usage   : ndex <Android.mk-path>
+# param   : Android.mk 路径
+# example : 
 function ndex(){
     if [[ `egrep -c "LOCAL_PACKAGE_NAME :=|LOCAL_MODULE :=" $1` > 0 ]] ; then
         sed '/LOCAL_PACKAGE_NAME :=\|LOCAL_MODULE :=/a\LOCAL_DEX_PREOPT := false' -i $1
@@ -207,6 +203,6 @@ function ndex(){
             fi 
         done
     else
-        echored "Not find \"LOCAL_PACKAGE_NAME\" or \"LOCAL_MODULE\" in this file !"
+        echoRed "Not find \"LOCAL_PACKAGE_NAME\" or \"LOCAL_MODULE\" in this file !"
     fi
 }

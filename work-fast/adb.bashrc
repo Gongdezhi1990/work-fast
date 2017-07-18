@@ -36,8 +36,9 @@ function startActivity(){
 # 截屏并保存到PC端
 # usage   : adbcap [<file-name>]
 # param   : 文件名字,如果不指定,则以"手机型号-当前时间"命名。
-# example : adbp out/target/product/a3658/system/app/Email/Email.apk
-adbcap(){
+# example : adbcap
+#           adbcap name
+function adbcap(){
     local name=`adb shell getprop ro.product.name`
     if [ $? -eq 0 ] ; then
         if [ "$1" = "" ]; then
@@ -46,17 +47,17 @@ adbcap(){
             local fileName=${1}
         fi
         adb shell screencap -p /sdcard/${fileName}.png && adb pull /sdcard/${fileName}.png
-        echogreen "--> ${fileName}.png"
+        echoGreen "--> ${fileName}.png"
     fi
 }
 
-# Push files into phone
+# 快速将编译生成的模块push到手机中，注意模块的路径
 # usage   : adbp [<path>...]
-# param   : 文件路径，
+# param   : 文件路径，“"out/target/product/<ProjectName>/"开头
 #           如果指定，则push指定的apk(s)；
 #           如果没指定，则检查工程根目录下的make.log文件
 # example : adbp out/target/product/a3658/system/app/Email/Email.apk
-adbp(){
+function adbp(){
     if [ $# -gt 0 ]; then
         adb remount
         for path in $@
@@ -70,11 +71,11 @@ adbp(){
             adbPushExt $path
         done
     else
-        echored "Do nothing !"
+        echoRed "Do nothing !"
     fi
 }
 
-# Push files into phone, only for dewav
+# Push files into phone
 # usage   : adbp <path>
 # param   : file's path, must start with "out/target/product/projectname/"
 # example : adbp out/target/product/a3658/system/app/Email/Email.apk
@@ -82,14 +83,14 @@ function adbPushExt(){
     local path=$1
 
     if [ "$path" = "" ] || [ ! -f $path ] ; then
-        echogreen "Source file is not exist, please check!"
+        echoGreen "Source file is not exist, please check!"
     else
         local dir=`dirname $path`
-        dir=`echo $dir | sed 's/out\/target\/product\/.....\///g'`
-        echogreen "adb push $path $dir"
+        dir=`echo $dir | sed 's/out\/target\/product\/[a-z0-9A-Z._-]*\///g'`
+        echoGreen "adb push $path $dir"
         adb push -p $path $dir
         if [ $? -ne 0 ]; then
-            echoerror
+            echoError
         fi
     fi
 }
@@ -98,7 +99,7 @@ function adbPushExt(){
 # usage  : adbkill <keyword>
 # param   : <keyword>, 需要杀死的进程名称关键字
 # example : adbkill systemui
-adbkill(){
+function adbkill(){
     pid=0
 
     OLD_IFS="$IFS"
@@ -110,7 +111,7 @@ adbkill(){
 
     if [ $length -eq 1 ] ; then
         pid=`echo ${process[0]} | awk '{printf $1}'`
-    	echogreen "killed -> ${process[0]}"
+    	echoGreen "killed -> ${process[0]}"
         adb shell kill $pid
     elif [ $length -gt 1 ]; then
         for i in "${!process[@]}"; do 
@@ -123,26 +124,26 @@ adbkill(){
         if [ "$index" != "" ] ; then
             if [[ "$index" -ge 0 && "$index" -lt "$length" ]] ; then
                 pid=`echo ${process[$index]} | awk '{printf $1}'`
-                echogreen "killed -> ${process[$index]}"
+                echoGreen "killed -> ${process[$index]}"
                 adb shell kill $pid
             else
-                echored "Error index!"
+                echoRed "Error index!"
             fi
         fi
     else
-        echored "Not find !!!"
+        echoRed "Not find !!!"
     fi
 }
 
 # 开发时要改的一些设置
-adbdev(){
+function adbdev(){
     # 充电时手机常亮
     adbSetSetting global stay_on_while_plugged_in 3
     # 灭屏时间30分钟
     adbSetSetting system screen_off_timeout 1800000
 }
 
-adbSetSetting(){
+function adbSetSetting(){
     local filed=$1
     local name=$2
     local value=$3
@@ -159,11 +160,9 @@ alias smtk='startActivity com.mediatek.mtklogger/.MainActivity'
 alias dmtk='adb shell rm -rf /sdcard/mtklog'
 
 # 将手机中的mtklog拷贝到~/log目录下
-pmtk(){
-    local name=`adb shell getprop ro.product.name`
-    # 获取手机name成功
-    if [ $? -eq 0 ] ; then
-        # 是否有log标题
+function pmtk(){
+    local state=`adb get-state`
+    if [ "$state" = "device" ] ; then
         if [ "$1" = "" ]; then
             local folderName=${name}-`date +%m%d%k%M`
         else
@@ -172,7 +171,8 @@ pmtk(){
         local logPath=~/log/${folderName}/mtklog
         mkdir -p "${logPath}"
         adb pull /sdcard/mtklog "${logPath}"
-        echogreen "--> ${logPath}"
+        echo "mtklog is saved in :"
+        echoGreen "--> ${logPath}"
     fi
 }
 
