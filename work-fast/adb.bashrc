@@ -42,7 +42,7 @@ function adbcap(){
     local name=`adb shell getprop ro.product.name`
     if [ $? -eq 0 ] ; then
         if [ "$1" = "" ]; then
-            local fileName=${name}-`date +%m%d%k%M`
+            local fileName=${name}-`date +%m%d%k%M%S`
         else
             local fileName=${1}
         fi
