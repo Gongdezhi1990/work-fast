@@ -163,6 +163,7 @@ alias dmtk='adb shell rm -rf /sdcard/mtklog'
 function pmtk(){
     local state=`adb get-state`
     if [ "$state" = "device" ] ; then
+        local name=`adb shell getprop ro.product.name`
         if [ "$1" = "" ]; then
             local folderName=${name}-`date +%m%d%k%M`
         else
