@@ -120,7 +120,7 @@ function setvp(){
     fi
 }
 
-# 编译模块
+# 编译模块,会在工程根目录下生成make.log文件供"adbp"命令解析将mk结果push到手机中
 # mk <path>      - 如果没有指定path，编译当前所在文件夹
 #                  如果指定path，编译指定路径的模块
 # mk framework   - 编译整个框架
@@ -146,7 +146,7 @@ function mk(){
     fi
 }
 
-# 编译模块以及依赖模块
+# 编译模块以及依赖模块, 会在工程根目录下生成make.log文件供"adbp"命令解析将mk结果push到手机中
 # usage   : mk <path>
 # param   : <path> 如果没有指定path，编译当前所在文件夹的模块以及其依赖的模块
 #                  如果指定path，编译指定路径的模块以及其依赖的模块

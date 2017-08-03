@@ -167,6 +167,7 @@ alias smtk='adb shell am broadcast -a com.mediatek.mtklogger.ADB_CMD -e cmd_name
 # usage   : adbkill [<target>]
 # param   : <target>, 1/2/4/16，分别代表MobileLog/ModemLog/NetworkLog/GPSLog, 可以用"或"进行多选
 #           比如'23'表示全部打开
+#           如果没指定<target>，默认只打开"MobileLog"
 # example : 
 function rsmtk(){
     adb shell am broadcast -a com.mediatek.mtklogger.ADB_CMD -e cmd_name stop --ei cmd_target 23
