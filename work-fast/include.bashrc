@@ -1,8 +1,8 @@
 #!/bin/bash
 
-source ~/.segon/sys.bashrc
-source ~/.segon/utils.bashrc
-source ~/.segon/adb.bashrc
-source ~/.segon/android.bashrc
-source ~/.segon/git.bashrc
-source ~/.segon/ckclash.bashrc
+source ~/.work-fast/sys.bashrc
+source ~/.work-fast/utils.bashrc
+source ~/.work-fast/adb.bashrc
+source ~/.work-fast/android.bashrc
+source ~/.work-fast/git.bashrc
+source ~/.work-fast/ckclash.bashrc
