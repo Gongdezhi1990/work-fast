@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [ "$bashrcandroid" ]; then
     return
 fi
