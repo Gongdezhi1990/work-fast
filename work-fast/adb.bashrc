@@ -3,6 +3,7 @@ if [ "$bashrcadb" ]; then
     return
 fi
 export bashrcadb="bashrc-adb"
+
 #===============================================================
 # adb
 #===============================================================
@@ -96,7 +97,7 @@ function adbPushExt(){
 }
 
 # 杀掉手机中进程
-# usage  : adbkill <keyword>
+# usage   : adbkill <keyword>
 # param   : <keyword>, 需要杀死的进程名称关键字
 # example : adbkill systemui
 function adbkill(){
@@ -154,10 +155,33 @@ function adbSetSetting(){
 }
 
 # 打开mtklog界面
-alias smtk='startActivity com.mediatek.mtklogger/.MainActivity'
+alias omtk='startActivity com.mediatek.mtklogger/.MainActivity'
 
-# 删除手机中的mtk文件夹
+# 删除手机中的mtklog文件夹
 alias dmtk='adb shell rm -rf /sdcard/mtklog'
+
+# 停止mtklogger
+alias smtk='adb shell am broadcast -a com.mediatek.mtklogger.ADB_CMD -e cmd_name stop --ei cmd_target 23'
+
+# 重新启动mtklogger，并指定target，注意手机重启会导致选定的target失效
+# usage   : adbkill [<target>]
+# param   : <target>, 1/2/4/16，分别代表MobileLog/ModemLog/NetworkLog/GPSLog, 可以用"或"进行多选
+#           比如'23'表示全部打开
+# example : 
+function rsmtk(){
+    adb shell am broadcast -a com.mediatek.mtklogger.ADB_CMD -e cmd_name stop --ei cmd_target 23
+
+    echo "sleep 3s ..."
+    sleep 3
+
+    adb shell rm -rf /sdcard/mtklog
+
+    if [ $# -eq 0 ] ; then
+        adb shell am broadcast -a com.mediatek.mtklogger.ADB_CMD -e cmd_name start --ei cmd_target 1
+    else
+        adb shell am broadcast -a com.mediatek.mtklogger.ADB_CMD -e cmd_name start --ei cmd_target $1
+    fi
+}
 
 # 将手机中的mtklog拷贝到~/log目录下
 function pmtk(){
