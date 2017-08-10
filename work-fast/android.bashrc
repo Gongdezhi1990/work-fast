@@ -205,3 +205,30 @@ function ndex(){
         echoRed "Not find \"LOCAL_PACKAGE_NAME\" or \"LOCAL_MODULE\" in this file !"
     fi
 }
+
+# aapt
+export PATH=$PATH:/home/segon/Android/Sdk/build-tools/25.0.3/
+
+# 查看apk的基本信息
+# usage   : apki ~/path/my.apk
+# param   : apk文件路径
+# example : 
+function apki(){
+    for path in $@
+    do
+        local result=`aapt dump badging $path | grep "package: name\|versionCode\|application:\|launchable-activity" | sed "s/\(platformBuildVersionName.*$\)\|\(: name\)//g"`
+        local label=`echo ${result} | sed "s/^.*application: label='//" | sed "s/'.*$//"`
+        local package=`echo ${result} | sed "s/^.*package='//" | sed "s/'.*$//"`
+        local versionCode=`echo ${result} | sed "s/^.*versionCode='//" | sed "s/'.*$//"`
+        local versionName=`echo ${result} | sed "s/^.*versionName='//" | sed "s/'.*$//"`
+        local activityName=`echo ${result} | sed "s/^.*launchable-activity='//" | sed "s/'.*$//"`
+        local activityLabel=`echo ${result} | sed "s/^.*launchable-activity=.*label='//" | sed "s/'.*$//"`
+
+        echoGreen "$label"
+        printf "  %-13s: %-40s \n" packge "${package}"
+        printf "  %-13s: %-40s \n" "version code" "${versionCode}"
+        printf "  %-13s: %-40s \n" "version name" "${versionName}"
+        printf "  %-13s: %-40s \n" "activity" "${activityLabel}"
+        printf "  %-13s  %-40s \n" "" "${activityName}"
+    done
+}
