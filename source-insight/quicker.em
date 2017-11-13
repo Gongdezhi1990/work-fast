@@ -4670,7 +4670,8 @@ macro ReviseCommentProc(hbuf,ln,szCmd,szMyName,szLine1)
         return
     }
 }
-macro InsertReviseAdd()
+
+macro InsertRevise(action)
 {
     hwnd = GetCurrentWnd()
     sel = GetWndSel(hwnd)
@@ -4703,226 +4704,31 @@ macro InsertReviseAdd()
     }
     szQuestion = GetReg ("PNO")
     szContent = GetReg ("PT")
-    if(strlen(szQuestion)>0)
+    InsBufLine(hbuf, sel.lnFirst, "@szLeft@// dw @szMyName@ @action@: @szQuestion@ @szContent@ @sz@/@sz1@/@sz3@ \@{");
+    if(sel.lnLast < lnMax - 1)
     {
-        if(strlen(szContent) > 0)
-        {
-            InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: BugID: @szQuestion@  Added by @szMyName@, @sz@/@sz1@/@sz3@");
-            InsBufLine(hbuf, sel.lnFirst + 1, "@szLeft@           Title: @szContent@ */");
-        }
-        else
-        {
-            InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: BugID: @szQuestion@  Added by @szMyName@, @sz@/@sz1@/@sz3@ */");
-        }
-    
-        
-        if(sel.lnLast < lnMax - 1)
-        {
-            if(strlen(szContent) > 0)
-            {
-                InsBufLine(hbuf, sel.lnLast + 3, "@szLeft@/* }END  : BugID: @szQuestion@  Added by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-            }
-            else
-            {
-                InsBufLine(hbuf, sel.lnLast + 2, "@szLeft@/* }END  : BugID: @szQuestion@  Added by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-            }
-        }
-        else
-        {
-            AppendBufLine(hbuf, "@szLeft@/* }END  : BugID: @szQuestion@  Added by @szMyName@, @sz@/@sz1@/@sz3@ */");                        
-        }
+        InsBufLine(hbuf, sel.lnLast + 2, "@szLeft@// \@}"); 
     }
     else
     {
-        InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: Added by @szMyName@, @sz@/@sz1@/@sz3@ */");        
-        if(sel.lnLast < lnMax - 1)
-        {
-            InsBufLine(hbuf, sel.lnLast + 2, "@szLeft@/* }END  :  Added by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-        }
-        else
-        {
-            AppendBufLine(hbuf, "@szLeft@/* }END  :  Added by @szMyName@, @sz@/@sz1@/@sz3@ */");                        
-        }
-    }
+        AppendBufLine(hbuf, "@szLeft@// \@}");                        
+    }    
+    SetBufIns(hbuf,sel.lnFirst + 1, strlen(szLeft))
+}
 
-    if(strlen(szContent) > 0)
-    {
-        SetBufIns(hbuf,sel.lnFirst + 2, strlen(szLeft))
-    }
-    else
-    {
-        SetBufIns(hbuf,sel.lnFirst + 1, strlen(szLeft))
-    }
+macro InsertReviseAdd()
+{
+	InsertRevise("add")
 }
 
 macro InsertReviseDel()
 {
-    hwnd = GetCurrentWnd()
-    sel = GetWndSel(hwnd)
-    hbuf = GetCurrentBuf()
-    lnMax = GetBufLineCount(hbuf)
-    language = getreg(LANGUAGE)
-    if(language != 1)
-    {
-        language = 0
-    }
-    szMyName = getreg(MYNAME)
-    if(strlen( szMyName ) == 0)
-    {
-        szMyName = Ask("Enter your name:")
-        setreg(MYNAME, szMyName)
-    }
-    SysTime = GetSysTime(1)
-    sz=SysTime.Year
-    sz1=SysTime.month
-    sz3=SysTime.day
-    if(sel.lnFirst == sel.lnLast && sel.ichFirst == sel.ichLim)
-    {
-        szLeft = CreateBlankString(sel.ichFirst)
-    }
-    else
-    {
-        szLine = GetBufLine( hbuf, sel.lnFirst )    
-        nLeft = GetLeftBlank(szLine)
-        szLeft = strmid(szLine,0,nLeft);
-    }
-    szQuestion = GetReg ("PNO")
-    szContent = GetReg ("PT")
-    if(strlen(szQuestion)>0)
-    {
-        if(strlen(szContent) > 0)
-        {
-            InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: BugID: @szQuestion@  Deleted by @szMyName@, @sz@/@sz1@/@sz3@");
-            InsBufLine(hbuf, sel.lnFirst + 1, "@szLeft@           Title: @szContent@ */");
-        }
-        else
-        {
-            InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: BugID: @szQuestion@  Deleted by @szMyName@, @sz@/@sz1@/@sz3@ */");
-        }
-    
-        
-        if(sel.lnLast < lnMax - 1)
-        {
-            if(strlen(szContent) > 0)
-            {
-                InsBufLine(hbuf, sel.lnLast + 3, "@szLeft@/* }END  : BugID: @szQuestion@  Deleted by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-            }
-            else
-            {
-                InsBufLine(hbuf, sel.lnLast + 2, "@szLeft@/* }END  : BugID: @szQuestion@  Deleted by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-            }
-        }
-        else
-        {
-            AppendBufLine(hbuf, "@szLeft@/* }END  : BugID: @szQuestion@  Deleted by @szMyName@, @sz@/@sz1@/@sz3@ */");                        
-        }
-    }
-    else
-    {
-        InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: Deleted by @szMyName@, @sz@/@sz1@/@sz3@ */");        
-        if(sel.lnLast < lnMax - 1)
-        {
-            InsBufLine(hbuf, sel.lnLast + 2, "@szLeft@/* }END  :  Deleted by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-        }
-        else
-        {
-            AppendBufLine(hbuf, "@szLeft@/* }END  :  Deleted by @szMyName@, @sz@/@sz1@/@sz3@ */");                        
-        }
-    }
-
-    if(strlen(szContent) > 0)
-    {
-        SetBufIns(hbuf,sel.lnFirst + 2, strlen(szLeft))
-    }
-    else
-    {
-        SetBufIns(hbuf,sel.lnFirst + 1, strlen(szLeft))
-    }
+	InsertRevise("del")
 }
 
 macro InsertReviseMod()
 {
-    hwnd = GetCurrentWnd()
-    sel = GetWndSel(hwnd)
-    hbuf = GetCurrentBuf()
-    lnMax = GetBufLineCount(hbuf)
-    language = getreg(LANGUAGE)
-    if(language != 1)
-    {
-        language = 0
-    }
-    szMyName = getreg(MYNAME)
-    if(strlen( szMyName ) == 0)
-    {
-        szMyName = Ask("Enter your name:")
-        setreg(MYNAME, szMyName)
-    }
-    SysTime = GetSysTime(1)
-    sz=SysTime.Year
-    sz1=SysTime.month
-    sz3=SysTime.day
-    if(sel.lnFirst == sel.lnLast && sel.ichFirst == sel.ichLim)
-    {
-        szLeft = CreateBlankString(sel.ichFirst)
-    }
-    else
-    {
-        szLine = GetBufLine( hbuf, sel.lnFirst )    
-        nLeft = GetLeftBlank(szLine)
-        szLeft = strmid(szLine,0,nLeft);
-    }
-    szQuestion = GetReg ("PNO")
-    szContent = GetReg ("PT")
-    if(strlen(szQuestion)>0)
-    {
-        if(strlen(szContent) > 0)
-        {
-            InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: BugID: @szQuestion@  Modified by @szMyName@, @sz@/@sz1@/@sz3@");
-            InsBufLine(hbuf, sel.lnFirst + 1, "@szLeft@           Title: @szContent@ */");
-        }
-        else
-        {
-            InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: BugID: @szQuestion@  Modified by @szMyName@, @sz@/@sz1@/@sz3@ */");
-        }
-    
-        
-        if(sel.lnLast < lnMax - 1)
-        {
-            if(strlen(szContent) > 0)
-            {
-                InsBufLine(hbuf, sel.lnLast + 3, "@szLeft@/* }END  : BugID: @szQuestion@  Modified by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-            }
-            else
-            {
-                InsBufLine(hbuf, sel.lnLast + 2, "@szLeft@/* }END  : BugID: @szQuestion@  Modified by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-            }
-        }
-        else
-        {
-            AppendBufLine(hbuf, "@szLeft@/* }END  : BugID: @szQuestion@  Modified by @szMyName@, @sz@/@sz1@/@sz3@ */");                        
-        }
-    }
-    else
-    {
-        InsBufLine(hbuf, sel.lnFirst, "@szLeft@/* {BEGIN: Modified by @szMyName@, @sz@/@sz1@/@sz3@ */");        
-        if(sel.lnLast < lnMax - 1)
-        {
-            InsBufLine(hbuf, sel.lnLast + 2, "@szLeft@/* }END  :  Modified by @szMyName@, @sz@/@sz1@/@sz3@ */");            
-        }
-        else
-        {
-            AppendBufLine(hbuf, "@szLeft@/* }END  :  Modified by @szMyName@, @sz@/@sz1@/@sz3@ */");                        
-        }
-    }
-
-    if(strlen(szContent) > 0)
-    {
-        SetBufIns(hbuf,sel.lnFirst + 2, strlen(szLeft))
-    }
-    else
-    {
-        SetBufIns(hbuf,sel.lnFirst + 1, strlen(szLeft))
-    }
+	InsertRevise("modify")
 }
 
 // Wrap ifdef <sz> .. endif around the current selection
