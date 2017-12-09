@@ -18,7 +18,7 @@
 		EnableEvents="0"
 		WinHelpPath=""
 		HTMLHelpPath=""
-		CheckForUpdates="1"
+		CheckForUpdates="0"
 		/>
 	<DisplayPreferences>
 		<GeneralDisplayOptions
@@ -34,7 +34,7 @@
 			AccelSmoothScrolling="1"
 			ShowChangemarks="1"
 			ShowBookmarks="1"
-			PreserveFileCase="0"
+			PreserveFileCase="1"
 			TileForLinks="1"
 			ShowReadOnlyFileMarks="1"
 			SpaceWidthChar="1"
@@ -449,9 +449,7 @@
 			<item Command="Go Forward" Keycode="mouse(T2)" />
 			<item Command="Save All" Keycode="(CA)A" />
 			<item Command="Activate Search Bar" Keycode="(AS)F" />
-			<item Command="Go To Next Link" Keycode="(S)F9" />
 			<item Command="Go To First Link" Keycode="(CS)L" />
-			<item Command="Jump To Caller" Keycode="(CA)C" />
 			<item Command="Bookmark..." Keycode="(C)M" />
 			<item Command="File Type Options..." Keycode="(A)Y" />
 			<item Command="Insert Line Before Next" Keycode="(C)Space" />
@@ -470,7 +468,6 @@
 			<item Command="Cursor Right" Keycode="(A)L" />
 			<item Command="Activate Symbol Window" Keycode="(A)S" />
 			<item Command="Go Back" Keycode="(A)1" />
-			<item Command="addMTKTrace" Keycode="(A)4" Allocated="1" />
 			<item Command="InsertReviseDel" Keycode="(C)3" Allocated="1" />
 			<item Command="InsertReviseAdd" Keycode="(C)2" Allocated="1" />
 			<item Command="InsertReviseMod" Keycode="(C)1" Allocated="1" />
@@ -612,7 +609,6 @@
 			<item Command="Replace Files..." Keycode="(CS)H" />
 			<item Command="Go To Line..." Keycode="(C)G" />
 			<item Command="Jump To Link" Keycode="(C)L" />
-			<item Command="Jump To Definition" Keycode="(C)=" />
 			<item Command="Jump To Base Type" Keycode="(A)0" />
 			<item Command="Toggle Insert Mode" Keycode="Ins" />
 			<item Command="Selection History..." Keycode="(CS)M" />
@@ -656,6 +652,7 @@
 			<item Command="Activate Project Symbol List" Keycode="(A)G" />
 			<item Command="Activate Project Symbol List" Keycode="F7" />
 			<item Command="Complete Symbol" Keycode="(C)8" />
+			<item Command="Jump To Caller" Keycode="(A)4" />
 		</Main>
 	</Keymaps>
 	<CustomCommands>
@@ -858,25 +855,6 @@
 			PasteOutput="0"
 			SaveFilesFirst="0"
 			PauseWhenDone="0"
-			BeepWhenDone="0"
-			WaitUntilDone="0"
-			ReloadFiles="0"
-			ExitToWindows="0"
-			ParseOutput="0"
-			LineThenFile="0"
-			RegexType="Source Insight"
-			Preset="0"
-			ParsePattern=""
-			/>
-		<Command
-			Name="Segon Compare"
-			RunText="&quot;D:\Program Files\Beyond Compare 2\BC2.exe&quot; %f S:\A3268_\Code\%r"
-			WorkingDir=""
-			NormalWindow="1"
-			CaptureOutput="0"
-			PasteOutput="0"
-			SaveFilesFirst="0"
-			PauseWhenDone="1"
 			BeepWhenDone="0"
 			WaitUntilDone="0"
 			ReloadFiles="0"
@@ -1199,7 +1177,7 @@
 			ShowRightMargin="1"
 			ShowPageBreaks="0"
 			UseSymbolPane="1"
-			UseOverview="1"
+			UseOverview="0"
 			AllowAutocomplete="1"
 			AllowSmartPaste="1"
 			AllowSnippets="1"
